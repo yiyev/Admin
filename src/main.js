@@ -6,6 +6,10 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 // vue3.0 api
 import VueCompositionApi from "@vue/composition-api";
+//路由守卫
+import "@/router/premit";
+// 自定义全局组件
+import "./icons";
 
 Vue.use(ElementUI);
 Vue.use(VueCompositionApi);

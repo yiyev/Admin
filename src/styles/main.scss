@@ -1,1 +1,10 @@
+@import "./config.scss";
 @import "./normalize.scss";
+@import "./elementui.scss";
+
+.pull_left {
+  float: left;
+}
+.pull_right {
+  float: right;
+}
