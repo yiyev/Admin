@@ -4,7 +4,7 @@
       <svg-icon iconClass="menu" className="menu" />
     </div>
     <div class="pull_right">
-      <div class="user_info pull_left">{{ username || "管理员" }}</div>
+      <div class="user_info pull_left">{{ username }}</div>
       <div class="pull_left header_icon" @click="exit">
         <svg-icon iconClass="exit" className="exit" />
       </div>

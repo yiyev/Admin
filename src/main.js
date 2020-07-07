@@ -8,10 +8,13 @@ import "element-ui/lib/theme-chalk/index.css";
 import VueCompositionApi from "@vue/composition-api";
 //路由守卫
 import "@/router/premit";
+// 自定义全局方法
+// import global from "@/utils/global";
 // 自定义全局组件
 import "./icons";
 
-Vue.use(ElementUI);
+// Vue.use(global);
+Vue.use(ElementUI, { size: "medium" });
 Vue.use(VueCompositionApi);
 
 Vue.config.productionTip = false;

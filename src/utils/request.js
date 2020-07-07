@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Message } from "element-ui";
-// import { getToken, getUserName } from "@/utils/app";
+import { getToken, getUserName } from "@/utils/app";
 
 // 创建axios,赋给变量service
 // 手把手撸码前端API，地址http://www.web-jshtml.cn/productapi/productapi
@@ -24,8 +24,8 @@ service.interceptors.request.use(
     // console.log(config.headers);
     // 业务需求
 
-    // config.headers["Tokey"] = getToken();
-    // config.headers["userName"] = getUserName();
+    config.headers["Tokey"] = getToken();
+    config.headers["userName"] = getUserName();
 
     return config;
   },

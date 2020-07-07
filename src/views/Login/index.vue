@@ -97,7 +97,7 @@
 
 <script>
 import sha1 from "js-sha1";
-import { GetSms, Register, Login } from "@/api/login";
+import { GetSms, Register } from "@/api/login";
 import { reactive, ref } from "@vue/composition-api";
 import {
   stripscript,
