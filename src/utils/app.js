@@ -20,8 +20,8 @@ export function setUserName(value) {
   return cookie.set(userName, value);
 }
 // 获取用户名
-export function getUserName(value) {
-  return cookie.get(userName, value);
+export function getUserName() {
+  return cookie.get(userName);
 }
 // 移除用户名
 export function removeUserName() {

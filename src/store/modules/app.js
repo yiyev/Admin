@@ -28,7 +28,7 @@ const mutations = {
   },
   //更新用户名
   UPDATE_USERNAME(state, value) {
-    state.token = value;
+    state.username = value;
   }
 };
 const actions = {

@@ -1,20 +1,20 @@
 <template>
   <el-dialog
-    title="新增"
-    :visible.sync="data.dialog_info_flag"
+    :title="data.isEdit ? '编辑' : '新增'"
+    :visible.sync="data.dialog_flag"
     @close="close"
-    @opened="open"
+    @open="open"
     width="580px"
   >
-    <el-form :model="form" ref="form">
+    <el-form :model="data.form" ref="form">
       <el-form-item
         label="类别："
         :label-width="data.formLabelWidth"
         prop="categoryId"
       >
-        <el-select v-model="form.categoryId" placeholder="请选择类别">
+        <el-select v-model="data.form.categoryId" placeholder="请选择类别">
           <el-option
-            v-for="item in form.categoryList"
+            v-for="item in data.categoryList"
             :key="item.id"
             :label="item.category_name"
             :value="item.id"
@@ -26,7 +26,7 @@
         :label-width="data.formLabelWidth"
         prop="title"
       >
-        <el-input v-model="form.title" placeholder="请输入标题"></el-input>
+        <el-input v-model="data.form.title" placeholder="请输入标题"></el-input>
       </el-form-item>
       <el-form-item
         label="概括："
@@ -35,13 +35,14 @@
       >
         <el-input
           type="textarea"
-          v-model="form.content"
+          v-model="data.form.content"
           placeholder="请输入概括"
+          autosize
         ></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="close">取消</el-button>
+      <el-button @click="data.dialog_flag = false">取消</el-button>
       <el-button type="danger" @click="submit" :loading="data.submit_loading"
         >确定</el-button
       >
@@ -50,7 +51,7 @@
 </template>
 
 <script>
-import { AddInfo } from "@/api/news";
+import { AddInfo, EditInfo } from "@/api/news";
 import { reactive, watch } from "@vue/composition-api";
 export default {
   name: "dialogInfo",
@@ -73,54 +74,64 @@ export default {
     }
   },
   setup(props, { emit, root, refs }) {
-    // data+++++
+    /**
+     * data+++++++++++++++++++++++++++++++
+     */
     const data = reactive({
       submit_loading: false, //loading
-      dialog_info_flag: false, //弹窗标记
-      formLabelWidth: "70px"
+      dialog_flag: false, //弹窗标记
+      formLabelWidth: "70px",
+      isEdit: false, //编辑true | 新增false
+      categoryList: [], //信息分类下拉列表
+      form: {
+        id: "", //信息id
+        categoryId: "", //信息分类id
+        title: "", //信息标题
+        content: "" //信息概括
+      }
     });
-    const form = reactive({
-      categoryId: [], //信息分类id
-      categoryList: [], //信息分类列表
-      title: [], //信息标题
-      content: "" //信息概括
+    /**
+     * watch+++++++++++++++++++++++++++++++
+     */
+    watch(() => {
+      data.dialog_flag = props.flag;
+      data.isEdit = props.isEdit;
     });
-    // watch+++++
-    watch(() => (data.dialog_info_flag = props.flag));
-    // methods+++++
+    /**
+     * methods+++++++++++++++++++++++++++++++
+     */
     // 打开弹框
     const open = () => {
-      form.categoryList = props.category;
+      // 类别下拉列表赋值
+      data.categoryList = props.category;
+      // 判读是新增还是编辑 编辑的情况赋值
+      if (data.isEdit) {
+        data.form.id = props.infoData.id;
+        data.form.categoryId = props.infoData.category;
+        data.form.title = props.infoData.title;
+        data.form.content = props.infoData.content;
+      }
     };
     // 关闭弹框
     const close = () => {
-      data.dialog_info_flag = false;
-      refs.form.resetFields();
+      // 重置表单
+      refs["form"].resetFields();
+      //重置信息id
+      data.form.id = "";
+      // 关闭弹框
+      data.dialog_flag = false;
       emit("update:flag", false);
     };
-    // submit
-    const submit = () => {
-      // 校验
-      if (!form.categoryId) {
-        return root.$message.error("分类不能为空！");
-      }
-      if (!form.title) {
-        return root.$message.error("标题不能为空！");
-      }
-      if (!form.content) {
-        return root.$message.error("概括不能为空！");
-      }
+    // 新增信息 提交
+    const add_submit = requestData => {
       data.submit_loading = true;
-      let requestData = {
-        categoryId: form.categoryId,
-        title: form.title,
-        // imgUrl: form.imgUrl,
-        content: form.content
-      };
       AddInfo(requestData)
         .then(res => {
           data.submit_loading = false;
-          refs.form.resetFields();
+          // 重置表单
+          refs["form"].resetFields();
+          // 更新数据
+          emit("updateData");
           root.$message({
             message: res.data.message,
             type: "success"
@@ -131,10 +142,51 @@ export default {
           console.log(err);
         });
     };
+    // 编辑信息 提交
+    const edit_submit = requestData => {
+      data.submit_loading = true;
+      EditInfo(requestData)
+        .then(res => {
+          data.submit_loading = false;
+          // 更新数据
+          emit("updateData");
+          root.$message({
+            message: res.data.message,
+            type: "success"
+          });
+        })
+        .catch(err => {
+          data.submit_loading = false;
+          console.log(err);
+        });
+    };
+    // submit
+    const submit = () => {
+      // 校验
+      if (!data.form.categoryId) {
+        return root.$message.error("分类不能为空！");
+      }
+      if (!data.form.title) {
+        return root.$message.error("标题不能为空！");
+      }
+      if (!data.form.content) {
+        return root.$message.error("概括不能为空！");
+      }
+      let requestData = {
+        categoryId: data.form.categoryId, //分类ID
+        title: data.form.title, //标题
+        // imgUrl: form.imgUrl,
+        content: data.form.content //内容
+      };
+      if (data.isEdit) {
+        requestData.id = data.form.id;
+      }
+      data.isEdit ? edit_submit(requestData) : add_submit(requestData);
+    };
+
     return {
       // 数据
       data,
-      form,
       // methods
       open,
       close,

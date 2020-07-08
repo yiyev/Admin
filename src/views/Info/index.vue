@@ -143,7 +143,13 @@
       </el-col>
     </el-row>
     <!-- 新增|编辑弹窗 -->
-    <DialogInfo :flag.sync="data.dialog_info" :category="data.categoryList" />
+    <DialogInfo
+      :flag.sync="data.dialog_info"
+      :category="data.categoryList"
+      :isEdit="data.isEdit"
+      :infoData="data.infoData"
+      @updateData="getList"
+    />
   </div>
 </template>
 
@@ -201,7 +207,7 @@ export default {
       if (data.category_value) {
         requestData.categoryId = data.category_value;
       }
-      // 日期
+      // 日期+++待定
       if (data.data_value && data.data_value.length > 0) {
         requestData.startTiem = data.data_value[0];
         requestData.endTime = data.data_value[1];
@@ -234,8 +240,10 @@ export default {
           console.log(err);
         });
     };
-    //
+    // 新增
     const addInfo = () => {
+      // 新增状态
+      data.isEdit = false;
       data.dialog_info = true;
     };
     // 搜索框
@@ -246,7 +254,6 @@ export default {
     // 选中数据
     const selectionChange = val => {
       data.deleteInfoId = val.map(item => item.id);
-      console.log(`deleteInfoId`, data.deleteInfoId);
     };
 
     // 页码变化
@@ -297,7 +304,18 @@ export default {
         });
     };
     // 编辑
-    const editItem = () => {};
+    const editItem = row => {
+      // console.log(row);
+      // 赋值
+      data.infoData.id = row.id; //信息id
+      data.infoData.category = row.categoryId; //类别id
+      data.infoData.title = row.title; //title
+      data.infoData.content = row.content; //content
+      // 编辑状态
+      data.isEdit = true;
+      // 打开弹窗
+      data.dialog_info = true;
+    };
     // 类别格式化
     const toCategory = row => {
       let categoryData = data.categoryList.filter(

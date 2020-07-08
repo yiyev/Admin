@@ -1,6 +1,6 @@
 <template>
   <div id="category">
-    <el-button type="danger" @click="addFirst({ type: 'category_first_add' })"
+    <el-button type="danger" @click="addFirst({ type: 'first_add' })"
       >添加一级分类</el-button
     >
     <hr class="hr_e9" />
@@ -25,12 +25,21 @@
                     @click="
                       editCategory({
                         data: firstItem,
-                        type: 'category_first_edit'
+                        type: 'first_edit'
                       })
                     "
                     >编辑</el-button
                   >
-                  <el-button size="mini" type="success" round
+                  <el-button
+                    size="mini"
+                    type="success"
+                    round
+                    @click="
+                      addChildren({
+                        data: firstItem,
+                        type: 'children_add'
+                      })
+                    "
                     >添加子集</el-button
                   >
                   <el-button
@@ -41,7 +50,7 @@
                   >
                 </div>
               </h4>
-              <!-- 二级分类 -->
+              <!-- 子级分类 -->
               <ul v-if="firstItem.children">
                 <li
                   v-for="childrenItem in firstItem.children"
@@ -68,21 +77,21 @@
             <el-form-item
               label="一级分类名称："
               prop="categoryName"
-              v-if="data.category_first_input"
+              v-if="data.first_input"
             >
               <el-input
                 v-model="data.categoryForm.categoryName"
-                :disabled="data.category_first_disabled"
+                :disabled="data.first_disabled"
               ></el-input>
             </el-form-item>
             <el-form-item
               label="二级分类名称："
               prop="secCategoryName"
-              v-if="data.category_children_input"
+              v-if="data.children_input"
             >
               <el-input
                 v-model="data.categoryForm.secCategoryName"
-                :disabled="data.category_children_disabled"
+                :disabled="data.children_disabled"
               ></el-input>
             </el-form-item>
             <el-form-item>
@@ -102,7 +111,12 @@
 </template>
 
 <script>
-import { AddFirstCategory, DeleteCategory, EditCategory } from "@/api/news";
+import {
+  AddFirstCategory,
+  DeleteCategory,
+  EditCategory,
+  AddChildrenCategory
+} from "@/api/news";
 import { reactive, onMounted, watch } from "@vue/composition-api";
 import { global } from "@/utils/global";
 import { common } from "@/api/common";
@@ -115,11 +129,11 @@ export default {
     // 数据++++++++
     const data = reactive({
       categoryList: [], //分类列表
-      category_first_input: true, //一级分类名称
-      category_children_input: true, //子级分类名称
+      first_input: true, //一级分类名称
+      children_input: true, //子级分类名称
       submit_loading: false, //loading
-      category_first_disabled: true, //一级分类
-      category_children_disabled: true, //二级分类
+      first_disabled: true, //一级分类
+      children_disabled: true, //二级分类
       submit_btn_disabled: true, //提交
       submit_btn_type: "", //一级分类| 二级分类
       curData: "", //当前数据
@@ -131,28 +145,28 @@ export default {
     // methods++++++
     // 添加一级分类
     const addFirst = params => {
-      console.log(`params`, params);
-
       data.submit_btn_type = params.type;
-      console.log(`type`, data.submit_btn_type);
-
       // 清空输入框
       data.categoryForm.categoryName = "";
-      data.category_first_input = true;
-      data.category_children_input = false;
-      data.category_first_disabled = false;
-      data.category_children_disabled = true;
+      data.first_input = true;
+      data.children_input = false;
+      data.first_disabled = false;
+      data.children_disabled = true;
       data.submit_btn_disabled = false;
     };
     // 确定按钮
     const submit = ruleForm => {
       // 添加一级分类
-      if (data.submit_btn_type == "category_first_add") {
+      if (data.submit_btn_type == "first_add") {
         addFirstCategory(ruleForm);
       }
-      //
-      if (data.submit_btn_type == "category_first_edit") {
+      // 编辑一级分类
+      if (data.submit_btn_type == "first_edit") {
         editFirstCategory(ruleForm);
+      }
+      // 添加子级分类
+      if (data.submit_btn_type == "children_add") {
+        addChildrenCategory();
       }
     };
     // 添加一级分类
@@ -167,13 +181,13 @@ export default {
       data.submit_loading = true;
       AddFirstCategory(requsetData)
         .then(res => {
-          let dataT = res.data;
-          if (dataT.resCode === 0) {
+          let resData = res.data;
+          if (resData.resCode === 0) {
             // 获取信息分类
             getInfoCategory();
             root.$message({
               type: "success",
-              message: dataT.message
+              message: resData.message
             });
           }
           data.submit_loading = false;
@@ -184,6 +198,51 @@ export default {
           refs[ruleForm].resetFields();
           console.log(err);
         });
+    };
+    // 添加子级分类
+    const addChildrenCategory = () => {
+      // 校验
+      if (!data.categoryForm.secCategoryName) {
+        root.$message.error("子级分类名称不能为空");
+        return false;
+      }
+      let requsetData = {
+        categoryName: data.categoryForm.secCategoryName,
+        parentId: data.curData.id
+      };
+      AddChildrenCategory(requsetData)
+        .then(res => {
+          root.$message({
+            type: "success",
+            message: res.data.message
+          });
+          // 获取信息分类
+          getInfoCategory();
+          // 清空子级输入框内容
+          data.categoryForm.secCategoryName = "";
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+    // 添加子级
+    const addChildren = params => {
+      // 更新确定按钮类型
+      data.submit_btn_type = params.type;
+      console.log(`params`, params);
+      // 存储数据
+      data.curData = params.data;
+
+      // 显示子级输入框
+      data.children_input = true;
+      // 禁用一级级输入框
+      data.first_disabled = true;
+      // 启用子级输入框
+      data.children_disabled = false;
+      // 启用确定按钮
+      data.submit_btn_disabled = false;
+      // 显示一级分类文本
+      data.categoryForm.categoryName = params.data.category_name;
     };
     // 删除分类前确认
     const deleteCategoryConfirm = categoryId => {
@@ -198,13 +257,13 @@ export default {
     const deleteCategory = categoryId => {
       DeleteCategory({ categoryId: categoryId })
         .then(res => {
-          let dataT = res.data;
-          if (dataT.resCode === 0) {
+          let resData = res.data;
+          if (resData.resCode === 0) {
             // 获取信息分类
             getInfoCategory();
             root.$message({
               type: "success",
-              message: dataT.message
+              message: resData.message
             });
           }
         })
@@ -215,8 +274,8 @@ export default {
     // 编辑分类
     const editCategory = params => {
       data.submit_btn_type = params.type;
-      data.category_children_input = false;
-      data.category_first_disabled = false;
+      data.children_input = false;
+      data.first_disabled = false;
       data.submit_btn_disabled = false;
       // 一级分类名称输入还原名称
       data.categoryForm.categoryName = params.data.category_name;
@@ -235,10 +294,10 @@ export default {
       data.submit_loading = true;
       EditCategory(requestData)
         .then(res => {
-          let dataT = res.data;
-          if (dataT.resCode === 0) {
+          let resData = res.data;
+          if (resData.resCode === 0) {
             root.$message({
-              message: dataT.message,
+              message: resData.message,
               type: "success"
             });
             // 获取信息分类
@@ -285,7 +344,9 @@ export default {
       addFirst,
       submit,
       deleteCategoryConfirm,
-      editCategory
+      editCategory,
+      addChildren,
+      addChildrenCategory
     };
   }
 };
@@ -320,7 +381,6 @@ export default {
     border-left: 1px dotted #000;
   }
   h4 {
-    // position: relative;
     padding-left: 40px;
     svg {
       position: absolute;

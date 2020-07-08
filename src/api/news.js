@@ -1,8 +1,8 @@
 import service from "@/utils/request";
+
 /**
  * 获取列表
  */
-
 export function GetList(data) {
   return service.request({
     method: "post",
@@ -23,8 +23,15 @@ export function AddInfo(data) {
 }
 
 /**
- * 编辑
+ * 编辑信息
  */
+export function EditInfo(data) {
+  return service.request({
+    method: "post",
+    url: "/news/editInfo/",
+    data
+  });
+}
 
 /**
  * 删除信息
@@ -36,6 +43,7 @@ export function DeleteInfo(data) {
     data
   });
 }
+
 /**
  * 一级分类添加
  */
@@ -43,6 +51,17 @@ export function AddFirstCategory(data) {
   return service.request({
     method: "post",
     url: "/news/addFirstCategory/",
+    data
+  });
+}
+
+/**
+ * 子级分类添加
+ */
+export function AddChildrenCategory(data) {
+  return service.request({
+    method: "post",
+    url: "/news/addChildrenCategory/",
     data
   });
 }
