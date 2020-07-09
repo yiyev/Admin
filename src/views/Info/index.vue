@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-row :gutter="14">
+    <el-row :gutter="16">
       <!-- 类别 -->
       <el-col :span="4">
-        <div class="lalel_wrap category">
+        <div class="label_wrap category">
           <label for="">分类：</label>
           <div class="wrap_content">
             <el-select v-model="data.category_value" class="fullWidth">
@@ -20,7 +20,7 @@
       </el-col>
       <!-- 日期 -->
       <el-col :span="7">
-        <div class="lalel_wrap date">
+        <div class="label_wrap date">
           <label for="">日期：</label>
           <div class="wrap_content">
             <el-date-picker
@@ -39,18 +39,10 @@
       </el-col>
       <!-- 关键字 -->
       <el-col :span="3">
-        <div class="lalel_wrap key_word">
+        <div class="label_wrap key_word">
           <label for="">关键字：</label>
           <div class="wrap_content">
-            <el-select v-model="data.search_key" class="fullWidth">
-              <el-option
-                v-for="item in data.searchOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
+            <v-select :config="data.configOptions" />
           </div>
         </div>
       </el-col>
@@ -154,20 +146,23 @@
 </template>
 
 <script>
-import DialogInfo from "./dialog/info";
 import { global } from "@/utils/global";
 import { common } from "@/api/common";
 import { GetList, DeleteInfo } from "@/api/news";
 import { reactive, onMounted, watch } from "@vue/composition-api";
 import { timestampToTime } from "@/utils/common";
+// 组件
+import DialogInfo from "./dialog/info";
+import VSelect from "@/components/Select";
 export default {
   name: "infoIndex",
-  components: { DialogInfo },
+  components: { DialogInfo, VSelect },
   setup(props, { root }) {
     const { confirm } = global();
     const { getInfoCategory, category } = common();
     // 数据+++++++++++
     const data = reactive({
+      configOptions: { init: ["id", "title"] },
       category_value: "", //类别id
       date_value: "", //日期
       search_key: "id", //关键字  id/标题
@@ -175,10 +170,6 @@ export default {
       dialog_info: false, //新增弹框展示
       dialog_edit: false, //编辑弹框展示+++
       categoryList: [], //类别列表
-      searchOptions: [
-        { value: "id", label: "ID" },
-        { value: "title", label: "标题" }
-      ],
       table_data: [], //表格数据
       loadingData: false, //loading加载
       deleteInfoId: "", //删除id列表
@@ -327,8 +318,9 @@ export default {
     const toData = row => {
       return timestampToTime(row.createDate);
     };
+
     /**
-     * 生命周期
+     * onMounted
      */
     onMounted(() => {
       // 获取信息分类
@@ -369,7 +361,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/styles/config.scss";
-.lalel_wrap {
+.label_wrap {
   &.category {
     @include labelDom(left, 60, 36);
     // @include labelDom(left, 50, 36);

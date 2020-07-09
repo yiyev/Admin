@@ -23,10 +23,12 @@ export default {
    */
   name: "uploadImg",
   props: {
+    // 图片路径
     imgUrl: {
       type: String,
       default: ""
     },
+    // 图片上传配置
     config: {
       type: Object,
       default: () => {}
@@ -61,7 +63,7 @@ export default {
       // 文件名转码
       let suffix = file.name;
       let key = encodeURI(`${suffix}`);
-      // 图片名称
+      // 图片名称赋值
       data.uploadKey.key = key;
       return isJPG && isLt2M;
     };
