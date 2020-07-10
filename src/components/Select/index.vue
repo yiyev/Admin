@@ -88,8 +88,9 @@ export default {
 <style lang="scss" scoped></style>
 
 <!--
+下拉框组件封装
 组件目录位置：src > components > Select > index.vue
-组件引用方式：import vSelect from "@/c/Select";
+组件引用方式：import vSelect from "@/components/Select";
 teplate： <v-select :config="data.configOptions" />
 
 参数配置：

@@ -93,7 +93,7 @@ export default {
           },
           {
             label: "操作",
-            field: "type",
+            // field: "type",
             columnType: "slot",
             slotName: "operation"
           }
