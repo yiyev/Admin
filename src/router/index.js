@@ -14,7 +14,7 @@ import Layout from "@/views/Layout";
 const routes = [
   {
     path: "/",
-    redirect: "Login",
+    redirect: "login",
     hidden: true,
     meta: {
       name: "主页"
@@ -32,7 +32,7 @@ const routes = [
   {
     path: "/console",
     name: "Console",
-    redirect: "Index",
+    redirect: "index",
     meta: {
       name: "控制台",
       icon: "console"

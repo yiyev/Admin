@@ -18,7 +18,6 @@
         :rules="rules"
         ref="loginForm"
         class="login_form"
-        size="medium"
       >
         <!-- 邮箱 -->
         <el-form-item prop="userName" class="item_form">
@@ -273,21 +272,6 @@ export default {
         .catch(err => {
           console.log(err);
         });
-      /* Login(requestData)
-        .then(res => {
-          let data = res.data;
-          root.$message({
-            message: data.message,
-            type: "success"
-          });
-          // 页面跳转
-          root.$router.push({
-            name: "Console"
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        }); */
     };
     //  注册
     const register = () => {

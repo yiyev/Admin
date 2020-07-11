@@ -29,7 +29,9 @@ export default pagination;
 /**
  * 分页封装
  * 目录： src > mixins > Table > pagination.js
- * 引用方式： import pagination from "@/mixins/Table/pagination";
+ * 引用方式：
+ *  import pagination from "@/mixins/Table/pagination"
+ *  mixins: [pagination]
  * 与同级目录下 tableLoadData.js以及一起使用
  * 一个页面只能引入一次，引入多个会冲突
  */

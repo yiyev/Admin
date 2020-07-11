@@ -14,6 +14,9 @@
 .fullWidth {
   width: 100%;
 }
+.overflow_hidden {
+  overflow: hidden;
+}
 // for循环定义margin 偏移值
 @for $i from 1 through 110 {
   .margin_left_#{$i} {

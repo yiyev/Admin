@@ -1,6 +1,12 @@
 <template>
   <div>
-    <el-table :data="data.tableData" border style="width: 100%" stripe>
+    <el-table
+      :data="data.tableData"
+      border
+      style="width: 100%"
+      stripe
+      @selection-change="tableSelectionChange"
+    >
       <!-- 多选框 -->
       <el-table-column
         v-if="data.tableConfig.selection"
@@ -36,19 +42,30 @@
         </el-table-column>
       </template>
     </el-table>
-    <!-- 分页 -->
-    <el-pagination
-      v-if="data.tableConfig.paginationShow"
-      @size-change="pageSizeChange"
-      @current-change="pageChange"
-      :current-page="pageData.currentPage"
-      :page-sizes="pageData.pageSizes"
-      :page-size="pageData.pageSize"
-      :layout="data.tableConfig.paginationLayout"
-      :total="pageData.total"
-      background
-    >
-    </el-pagination>
+    <!--  -->
+    <div class="table_footer">
+      <el-row>
+        <el-col :span="4">
+          <slot name="tableFooterLeft"></slot>
+        </el-col>
+        <el-col :span="20">
+          <!-- 分页 -->
+          <el-pagination
+            class="pull_right"
+            v-if="data.tableConfig.paginationShow"
+            @size-change="pageSizeChange"
+            @current-change="pageChange"
+            :current-page="pageData.currentPage"
+            :page-sizes="pageData.pageSizes"
+            :page-size="pageData.pageSize"
+            :layout="data.tableConfig.paginationLayout"
+            :total="pageData.total"
+            background
+          >
+          </el-pagination>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
@@ -64,9 +81,13 @@ export default {
     config: {
       type: Object,
       default: () => {}
+    },
+    tableRow: {
+      type: Object,
+      default: () => {}
     }
   },
-  setup(props, { root }) {
+  setup(props, { root, emit }) {
     // 加载数据
     const { tableData, tableLoadData } = loadData({ root });
     // 页码
@@ -97,28 +118,7 @@ export default {
         paginationLayout: "total, sizes, prev, pager, next, jumper"
       },
       // 表格数据
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
-      ]
+      tableData: []
     });
 
     /**
@@ -161,6 +161,22 @@ export default {
       }
     };
 
+    // 勾选checkout时触发
+    const tableSelectionChange = val => {
+      let rowData = {
+        idItem: val.map(item => item.id)
+      };
+      emit("update:tableRow", rowData);
+    };
+
+    /**
+     * 刷新数据
+     */
+    const refreshData = () => {
+      // 加载数据
+      tableLoadData(data.tableConfig.requestData);
+    };
+
     /**
      * ***************************onBeforeMount*******************************
      */
@@ -174,13 +190,19 @@ export default {
       data,
       pageData,
       pageSizeChange,
-      pageChange
+      pageChange,
+      tableSelectionChange,
+      refreshData
     };
   }
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table_footer {
+  padding: 15px 0;
+}
+</style>
 
 <!--
 表格封装

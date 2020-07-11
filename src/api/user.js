@@ -1,15 +1,33 @@
+import service from "@/utils/request";
 /**
- * 获取验证码
+ * 获取角色列表
  */
+export function GetRole(data = {}) {
+  return service.request({
+    method: "post",
+    url: "/role/",
+    data
+  });
+}
 
 /**
- * 获取验证码
+ * 添加用户
  */
+export function UserAdd(data = {}) {
+  return service.request({
+    method: "post",
+    url: "/user/add/",
+    data
+  });
+}
 
 /**
- * 获取验证码
+ * 删除用户
  */
-
-/**
- * 获取验证码
- */
+export function Userdelete(data = {}) {
+  return service.request({
+    method: "post",
+    url: "/user/delete/",
+    data
+  });
+}

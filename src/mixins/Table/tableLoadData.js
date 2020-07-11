@@ -36,7 +36,9 @@ export default tableLoadData;
 /**
  * 表格数据接口方法封装
  * 目录： src > mixins > Table > tableLoadData.js
- * 引用方式： import tableLoadData from "@/mixins/Table/tableLoadData";
+ * 引用方式：
+ *  import tableLoadData from "@/mixins/Table/tableLoadData"
+ *  mixins: [tableLoadData]
  * 与同级目录下 pagination.js组合使用
  * 一个页面只能引入一次，引入多个会冲突
  */

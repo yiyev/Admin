@@ -54,3 +54,17 @@ export function loadTableData(params) {
     data: params.data || {}
   });
 }
+
+/**
+ * 获取省市区街道关联
+ * @param {
+ *
+ * *} params
+ */
+export function GetCityPicker(data) {
+  return service.request({
+    method: "post",
+    url: "/cityPicker/",
+    data
+  });
+}
