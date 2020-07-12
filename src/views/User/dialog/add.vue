@@ -1,12 +1,12 @@
 <template>
   <el-dialog
-    title="新增"
+    :title="editData.id ? '编辑' : '新增'"
     :visible.sync="data.dialog_flag"
     @close="close"
-    @open="open"
+    @opened="open"
     width="750px"
   >
-    <el-form :model="data.form" ref="form" :rules="data.rules">
+    <el-form :model="data.form" ref="userForm" :rules="data.rules">
       <!-- 用户名 -->
       <el-form-item
         label="用户名："
@@ -24,7 +24,7 @@
         label="密码："
         :label-width="data.formLabelWidth"
         prop="password"
-        required
+        :required="!editData.id"
       >
         <el-input
           v-model="data.form.password"
@@ -106,7 +106,7 @@
 
 <script>
 import { reactive, watch } from "@vue/composition-api";
-import { GetRole, UserAdd } from "@/api/user";
+import { GetRole, UserAdd, UserEdit } from "@/api/user";
 // 地区组件
 import cityPicker from "@/components/CityPicker";
 // 加密
@@ -127,9 +127,9 @@ export default {
       type: Boolean,
       default: false
     },
-    category: {
-      type: Array,
-      default: () => []
+    editData: {
+      type: Object,
+      default: () => {}
     }
   },
   setup(props, { emit, root, refs }) {
@@ -145,26 +145,46 @@ export default {
     };
     // 验证密码
     let validatepassword = (rule, value, callback) => {
-      // 过滤后的数据
-      data.form.password = stripscript(value);
-      value = data.form.password;
-      if (value === "") {
-        callback(new Error("请输入密码"));
-      } else if (validatePass(value)) {
-        callback(new Error("密码为6至20位数字+字母"));
-      } else {
+      /**
+       * 业务逻辑
+       * 1、编辑状态，
+       *    需要校验：data.form.id存在且密码不为空时
+       *    不需要校验：data.form.id存在且密码为空时
+       *
+       * 2、添加状态
+       *    需要校验：data.form.id不存在
+       */
+      if (data.form.id && !value) {
         callback();
+      }
+      if ((data.form.id && value) || !data.form.id) {
+        // 过滤后的数据
+        if (value) {
+          data.form.password = stripscript(value);
+          value = data.form.password;
+        }
+        if (value === "") {
+          callback(new Error("请输入密码"));
+        } else if (validatePass(value)) {
+          callback(new Error("密码为6至20位数字+字母"));
+        } else {
+          callback();
+        }
       }
     };
     // 验证真实姓名
     let validatetruename = (rule, value, callback) => {
+      /**
+       * 业务逻辑
+       *  非必填项，如果不填的话，默认通过，否则校验
+       */
+      if (value === "") {
+        callback();
+      }
       // 过滤后的数据
       data.form.truename = stripscript(value);
       value = data.form.truename;
-      // 非必填项，如果不填的话，默认通过，否则校验
-      if (value === "") {
-        callback();
-      } else if (validateTrueName(value)) {
+      if (validateTrueName(value)) {
         callback(new Error("真实姓名为2至4位汉字"));
       } else {
         callback();
@@ -172,13 +192,17 @@ export default {
     };
     // 验证手机号
     let validateUserphone = (rule, value, callback) => {
+      /**
+       * 业务逻辑
+       *  非必填项，如果不填的话，默认通过，否则校验
+       */
+      if (value === "") {
+        callback();
+      }
       // 过滤后的数据
       data.form.phone = stripscript(value);
       value = data.form.phone;
-      // 非必填项，如果不填的话，默认通过，否则校验
-      if (value === "") {
-        callback();
-      } else if (validatePhone(value)) {
+      if (validatePhone(value)) {
         callback(new Error("手机号格式有误"));
       } else {
         callback();
@@ -203,16 +227,16 @@ export default {
         truename: "", //真实姓名
         phone: "", //手机号
         region: "", //地区
-        status: "1", //禁启用状态*
+        status: "2", //禁启用状态*
         role: [] //角色类型*
       },
       // 表单校验规则
       rules: {
         username: [{ validator: validateusername, trigger: "blur" }], //用户名*
         password: [{ validator: validatepassword, trigger: "blur" }], //密码*
-        truename: [{ validator: validatetruename, trigger: "blur" }], //真实姓名++++++
-        phone: [{ validator: validateUserphone, trigger: "blur" }], //手机号++++++
-        role: [{ validator: validaterole, trigger: "blur" }] //角色类型*++++++
+        truename: [{ validator: validatetruename, trigger: "blur" }], //真实姓名
+        phone: [{ validator: validateUserphone, trigger: "blur" }], //手机号
+        role: [{ validator: validaterole, trigger: "change" }] //角色类型*
       },
       formLabelWidth: "100px",
       // 城市数据
@@ -248,27 +272,25 @@ export default {
     };
     // submit
     const submit = () => {
-      refs["form"].validate(valid => {
+      refs["userForm"].validate(valid => {
         // 表单验证通过
         if (valid) {
           let requestData = JSON.parse(JSON.stringify(data.form));
           requestData.role = requestData.role.join(); //数组转字符串，默认以逗号隔开
           requestData.region = JSON.stringify(data.cityPickerData);
-          requestData.password = sha1(requestData.password);
-          console.log(`phone`, requestData.phone.length);
-          console.log(`requestData`, requestData);
-          UserAdd(requestData)
-            .then(res => {
-              root.$message({
-                message: res.data.message,
-                type: "success"
-              });
-              // 重置表单
-              resetForm();
-            })
-            .catch(err => {
-              console.log(err);
-            });
+          // 添加状态，需要密码，并且加密
+          // 编辑状态，值存在，需要密码，并且加密，否则删除
+          if (requestData.id) {
+            if (requestData.password) {
+              requestData.password = sha1(requestData.password);
+            } else {
+              delete requestData.password;
+            }
+            userEdit(requestData);
+          } else {
+            requestData.password = sha1(requestData.password);
+            userAdd(requestData);
+          }
         } else {
           console.log("error submit!!");
           return false;
@@ -277,19 +299,75 @@ export default {
     };
 
     /**
+     * 用户编辑
+     */
+    const userEdit = requestData => {
+      UserEdit(requestData)
+        .then(res => {
+          root.$message({
+            message: res.data.message,
+            type: "success"
+          });
+          // 关闭弹框
+          close();
+          // 刷新数据
+          emit("refreshData");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+
+    /**
+     * 用户添加
+     */
+    const userAdd = requestData => {
+      UserAdd(requestData)
+        .then(res => {
+          root.$message({
+            message: res.data.message,
+            type: "success"
+          });
+          // 关闭弹框
+          close();
+          // 刷新数据
+          emit("refreshData");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+
+    /**
      * 重置表单-----地区未重置
      */
     const resetForm = () => {
-      refs["form"].resetFields();
+      refs["userForm"].resetFields();
     };
 
-    // 打开弹框，动画结束时
+    // 打开弹框
     const open = () => {
+      // 角色请求
       getRole();
+      // 初始值处理
+      let editData = props.editData;
+      // 如果存在id，编辑
+      if (editData.id) {
+        editData.role = editData.role ? editData.role.split(",") : []; //数组
+        // 循环JSON对象
+        for (let key in editData) {
+          data.form[key] = editData[key];
+        }
+      } else {
+        //添加
+        data.form.id && delete data.form.id;
+      }
     };
 
     // 关闭弹框
     const close = () => {
+      // 重置表单
+      resetForm();
       // 关闭弹框
       data.dialog_flag = false;
       emit("update:flag", false);
@@ -301,6 +379,8 @@ export default {
       open,
       close,
       submit,
+      userEdit,
+      userAdd,
       resetForm
     };
   }

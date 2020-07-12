@@ -42,9 +42,10 @@
         </el-table-column>
       </template>
     </el-table>
-    <!--  -->
+    <!-- 批量删除 && 分页 -->
     <div class="table_footer">
       <el-row>
+        <!-- 批量删除 -->
         <el-col :span="4">
           <slot name="tableFooterLeft"></slot>
         </el-col>

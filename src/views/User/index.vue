@@ -25,10 +25,7 @@
       </el-col>
       <!-- 添加用户按钮 -->
       <el-col :span="4">
-        <el-button
-          type="danger"
-          class="pull_right"
-          @click="data.dialog_add = true"
+        <el-button type="danger" class="pull_right" @click="userAdd"
           >添加用户</el-button
         >
       </el-col>
@@ -45,6 +42,7 @@
       <template v-slot:status="slotData"
         ><el-switch
           v-model="slotData.data.status"
+          @change="switchChange(slotData.data)"
           active-value="2"
           inactive-value="1"
           active-color="#13ce66"
@@ -60,7 +58,9 @@
           @click="handlerDelete(slotData.data)"
           >删除</el-button
         >
-        <el-button size="mini" type="success">编辑</el-button>
+        <el-button size="mini" type="success" @click="userEdit(slotData.data)"
+          >编辑</el-button
+        >
       </template>
       <!-- 操作按钮 -->
       <template v-slot:tableFooterLeft>
@@ -68,19 +68,25 @@
       </template>
     </v-table>
     <!-- 添加用户弹框 -->
-    <dialog-add :flag.sync="data.dialog_add" />
+    <dialog-add
+      :flag.sync="data.dialog_add"
+      :editData="data.editData"
+      @refreshData="refreshData"
+    />
   </div>
 </template>
 
 <script>
 import { reactive } from "@vue/composition-api";
-import { Userdelete } from "@/api/user";
+import { Userdelete, UserActives } from "@/api/user";
 // 组件
 import vSelect from "@/components/Select";
 import vTable from "@/components/Table";
 import dialogAdd from "./dialog/add";
+// 3.0抽离的方法
 import { global } from "@/utils/global";
-
+// 中央事件
+// import EventBus from "@/utils/bus";
 export default {
   name: "userList",
   components: { vSelect, vTable, dialogAdd },
@@ -92,11 +98,17 @@ export default {
     const data = reactive({
       // table选择的数据
       tableRow: {},
+      //添加用户弹框显示
+      dialog_add: false,
+      // 用户编辑数据
+      editData: {},
       // 下拉框组件配置参数
       configSelect: {
         // 下拉框key集合
         init: ["name", "phone", "email"]
       },
+      // 阻止状态
+      updateUserStatus: false,
       // table组件配置参数
       configTable: {
         // 多选框
@@ -129,9 +141,7 @@ export default {
             slotName: "operation"
           }
         ]
-      },
-      //添加用户弹框显示
-      dialog_add: false
+      }
     });
     //  批量删除用户
     const batchDelete = () => {
@@ -164,16 +174,59 @@ export default {
             type: "success"
           });
           // 刷新数据
-          refs.userTable.refreshData();
+          refreshData();
         })
         .catch(err => {
           console.log(err);
         });
     };
+    // 刷新数据
+    const refreshData = () => {
+      refs.userTable.refreshData();
+    };
+    // 禁启用状态变化
+    const switchChange = params => {
+      if (data.updateUserStatus) {
+        return false;
+      }
+      data.updateUserStatus = true;
+      let requestData = {
+        id: params.id, //用户ID（number）
+        status: params.status //状态（string）1：禁用，2：启用
+      };
+      UserActives(requestData)
+        .then(res => {
+          root.$message({
+            message: res.data.message,
+            type: "success"
+          });
+          data.updateUserStatus = false;
+        })
+        .catch(err => {
+          data.updateUserStatus = false;
+          console.log(err);
+        });
+    };
+    // 用户添加
+    const userAdd = () => {
+      data.dialog_add = true;
+      // 子组件赋值
+      data.editData = Object.assign({});
+    };
+    // 用户编辑
+    const userEdit = params => {
+      data.dialog_add = true;
+      // 子组件赋值
+      data.editData = Object.assign({}, params);
+    };
     return {
       data,
       batchDelete,
-      handlerDelete
+      handlerDelete,
+      refreshData,
+      switchChange,
+      userAdd,
+      userEdit
     };
   }
 };
