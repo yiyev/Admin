@@ -179,6 +179,19 @@ export default {
     };
 
     /**
+     * 带参数的刷新数据
+     */
+    const paramsLoadData = params => {
+      let requestData = Object.assign({}, params, {
+        pageNumber: 1,
+        pageSize: 10
+      });
+      data.tableConfig.requestData.data = requestData;
+      // 加载数据
+      tableLoadData(data.tableConfig.requestData);
+    };
+
+    /**
      * ***************************onBeforeMount*******************************
      */
     onBeforeMount(() => {
@@ -193,7 +206,8 @@ export default {
       pageSizeChange,
       pageChange,
       tableSelectionChange,
-      refreshData
+      refreshData,
+      paramsLoadData
     };
   }
 };

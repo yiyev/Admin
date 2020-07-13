@@ -3,15 +3,23 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 // 解决vue-router在3.0版本以上重复点击菜单报错的问题
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch(err => err);
-};
+// const originalPush = VueRouter.prototype.push;
+// VueRouter.prototype.push = function push(location) {
+//   return originalPush.call(this, location).catch(err => err);
+// };
+
+/**
+ * 1、系统分配
+ * 2、角色分配
+ */
 
 // 引入布局组件
 import Layout from "@/views/Layout";
 
-const routes = [
+/**
+ * 默认路由
+ */
+export const defaultRouteMap = [
   {
     path: "/",
     redirect: "login",
@@ -48,11 +56,25 @@ const routes = [
         component: () => import("../views/Console")
       }
     ]
-  },
+  }
+];
+
+const router = new VueRouter({
+  routes: defaultRouteMap
+});
+
+/**
+ * 动态路由
+ */
+export const asnycRoutrMap = [
+  /**
+   * 信息管理
+   */
   {
     path: "/info",
     name: "Info",
     meta: {
+      system: "infoSystem", //自定义key
       name: "信息管理",
       icon: "info"
     },
@@ -85,11 +107,14 @@ const routes = [
       }
     ]
   },
-  // 用户管理
+  /**
+   * 用户管理
+   */
   {
     path: "/user",
     name: "User",
     meta: {
+      system: "userSystem",
       name: "用户管理",
       icon: "user"
     },
@@ -106,9 +131,5 @@ const routes = [
     ]
   }
 ];
-
-const router = new VueRouter({
-  routes
-});
 
 export default router;

@@ -1,5 +1,9 @@
 <template>
-  <el-select v-model="data.selectValue" placeholder="请选择">
+  <el-select
+    v-model="data.selectValue"
+    placeholder="请选择"
+    @change="selectChange"
+  >
     <el-option
       v-for="item in data.initOptions"
       :key="item.value"
@@ -18,9 +22,13 @@ export default {
     config: {
       type: Object,
       default: () => {}
+    },
+    selectData: {
+      type: Object,
+      default: () => {}
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
     /**
      * data
      */
@@ -71,6 +79,14 @@ export default {
     };
 
     /**
+     * 选择触发
+     */
+    const selectChange = val => {
+      let filterData = data.options.filter(item => item.value === val)[0];
+      emit("update:selectData", filterData);
+    };
+
+    /**
      * onMounted
      */
     onMounted(() => {
@@ -79,7 +95,8 @@ export default {
     });
 
     return {
-      data
+      data,
+      selectChange
     };
   }
 };

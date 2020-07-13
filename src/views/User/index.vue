@@ -9,15 +9,21 @@
             <el-row :gutter="16">
               <!-- 关键字下拉框 -->
               <el-col :span="3">
-                <v-select :config="data.configSelect" />
+                <v-select
+                  :config="data.configSelect"
+                  :selectData.sync="data.selectData"
+                />
               </el-col>
               <!-- 请输入搜索的关键字 -->
               <el-col :span="4">
-                <el-input placeholder="请输入搜索的关键字"></el-input
+                <el-input
+                  v-model.trim="data.key_word"
+                  placeholder="请输入搜索的关键字"
+                ></el-input
               ></el-col>
               <!-- 搜索 -->
               <el-col :span="16">
-                <el-button type="danger">搜索</el-button>
+                <el-button type="danger" @click="search">搜索</el-button>
               </el-col>
             </el-row>
           </div>
@@ -39,7 +45,7 @@
       :tableRow.sync="data.tableRow"
     >
       <!-- 禁启用开关按钮 -->
-      <template v-slot:status="slotData"
+      <template v-slot:status="slotData" {{slotData.data.status}}
         ><el-switch
           v-model="slotData.data.status"
           @change="switchChange(slotData.data)"
@@ -107,6 +113,10 @@ export default {
         // 下拉框key集合
         init: ["name", "phone", "email"]
       },
+      // 下拉菜单数据
+      selectData: {},
+      // 搜索关键字
+      key_word: "",
       // 阻止状态
       updateUserStatus: false,
       // table组件配置参数
@@ -219,6 +229,13 @@ export default {
       // 子组件赋值
       data.editData = Object.assign({}, params);
     };
+    // 搜索
+    const search = () => {
+      let requestData = {
+        [data.selectData.value]: data.key_word
+      };
+      refs.userTable.paramsLoadData(requestData);
+    };
     return {
       data,
       batchDelete,
@@ -226,7 +243,8 @@ export default {
       refreshData,
       switchChange,
       userAdd,
-      userEdit
+      userEdit,
+      search
     };
   }
 };

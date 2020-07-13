@@ -5,7 +5,7 @@
 import service from "@/utils/request";
 
 /**
- * 获取角色列表
+ * 角色列表
  * @param {
  * 不传或传空对象
  * } data
@@ -14,6 +14,20 @@ export function GetRole(data) {
   return service.request({
     method: "post",
     url: "/role/",
+    data
+  });
+}
+
+/**
+ * 系统列表
+ * @param {
+ * 不传或传空对象
+ * } data
+ */
+export function GetSystem(data) {
+  return service.request({
+    method: "post",
+    url: "/system/",
     data
   });
 }
