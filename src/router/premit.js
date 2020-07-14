@@ -26,9 +26,9 @@ router.beforeEach((to, from, next) => {
       if (store.getters["app/roles"].length === 0) {
         store.dispatch("permission/getRoles").then(res => {
           let roles = res.role;
-          // let btnPerm = res.btnPerm;
+          let btnPerm = res.btnPerm;
           store.commit("app/UPDATE_ROLES", roles);
-          // store.commit("app/SET_BUTTON", btnPerm);
+          store.commit("app/UPDATE_BUTTON", btnPerm);
           // 存储角色
           store.dispatch("permission/createRouter", roles).then(() => {
             let addRouters = store.getters["permission/addRouters"];

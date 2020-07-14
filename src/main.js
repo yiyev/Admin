@@ -8,12 +8,11 @@ import "element-ui/lib/theme-chalk/index.css";
 import VueCompositionApi from "@vue/composition-api";
 //路由守卫
 import "@/router/premit";
-// 自定义全局方法
-// import global from "@/utils/global";
 // 自定义全局组件
 import "./icons";
-
-// Vue.use(global);
+// 引入按钮权限
+import { btnPermission } from "./utils/btnPermission";
+Vue.prototype.btnPerm = btnPermission;
 Vue.use(ElementUI, { size: "medium" });
 Vue.use(VueCompositionApi);
 

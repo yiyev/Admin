@@ -19,7 +19,21 @@ export function GetRole(data) {
 }
 
 /**
- * 系统列表
+ * 按钮权限
+ * @param {
+ * 不传或传空对象
+ * } data
+ */
+export function GetpermButton(data) {
+  return service.request({
+    method: "post",
+    url: "/permButton/",
+    data
+  });
+}
+
+/**
+ * 系统列表[未用]
  * @param {
  * 不传或传空对象
  * } data

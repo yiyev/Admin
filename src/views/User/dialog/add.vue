@@ -95,6 +95,28 @@
           >
         </el-checkbox-group>
       </el-form-item>
+      <!-- 按钮权限 -->
+      <el-form-item
+        label="按钮："
+        :label-width="data.formLabelWidth"
+        prop="btnPerm"
+      >
+        <template v-if="data.btnPerm.length > 0">
+          <div v-for="item in data.btnPerm" :key="item.name">
+            <h4>{{ item.name }}</h4>
+            <template v-if="item.perm && item.perm.length > 0">
+              <el-checkbox-group v-model="data.form.btnPerm">
+                <el-checkbox
+                  v-for="btn in item.perm"
+                  :key="btn.value"
+                  :label="btn.value"
+                  >{{ btn.name }}</el-checkbox
+                >
+              </el-checkbox-group>
+            </template>
+          </div>
+        </template>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="data.dialog_flag = false">取消</el-button>
@@ -107,7 +129,7 @@
 
 <script>
 import { reactive, watch } from "@vue/composition-api";
-import { GetRole, UserAdd, UserEdit } from "@/api/user";
+import { GetRole, UserAdd, UserEdit, GetpermButton } from "@/api/user";
 // 地区组件
 import cityPicker from "@/components/CityPicker";
 // 加密
@@ -229,8 +251,11 @@ export default {
         phone: "", //手机号
         region: "", //地区
         status: "2", //禁启用状态*
-        role: [] //角色类型*
+        role: [], //角色类型*
+        btnPerm: [] //按钮权限
       },
+      // 按钮权限
+      btnPerm: [],
       // 表单校验规则
       rules: {
         username: [{ validator: validateusername, trigger: "blur" }], //用户名*
@@ -266,6 +291,9 @@ export default {
       GetRole().then(res => {
         data.roleItem = res.data.data;
       });
+      GetpermButton().then(res => {
+        data.btnPerm = res.data.data;
+      });
     };
     // submit
     const submit = () => {
@@ -274,6 +302,7 @@ export default {
         if (valid) {
           let requestData = JSON.parse(JSON.stringify(data.form));
           requestData.role = requestData.role.join(); //数组转字符串，默认以逗号隔开
+          requestData.btnPerm = requestData.btnPerm.join(); //数组转字符串，默认以逗号隔开
           requestData.region = JSON.stringify(data.cityPickerData);
           // 添加状态，需要密码，并且加密
           // 编辑状态，值存在，需要密码，并且加密，否则删除
@@ -351,6 +380,7 @@ export default {
       // 如果存在id，编辑
       if (editData.id) {
         editData.role = editData.role ? editData.role.split(",") : []; //数组
+        editData.btnPerm = editData.btnPerm ? editData.btnPerm.split(",") : []; //数组
         // 循环JSON对象并赋值
         for (let key in editData) {
           data.form[key] = editData[key];

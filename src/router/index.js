@@ -87,7 +87,7 @@ export const asnycRouterMap = [
         path: "/infoIndex",
         name: "InfoIndex",
         meta: {
-          role: ["manager"],
+          role: ["sale"],
           name: "信息列表"
         },
         component: () => import("../views/Info")

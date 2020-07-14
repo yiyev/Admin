@@ -10,12 +10,14 @@ const state = {
   isCollapse: JSON.parse(sessionStorage.getItem("isCollapse")) || false,
   token: "",
   username: getUserName() || "",
-  roles: []
+  roles: [],
+  btnPerm: []
 };
 const getters = {
   isCollapse: state => state.isCollapse,
   username: state => state.username,
-  roles: state => state.roles
+  roles: state => state.roles,
+  btnPerm: state => state.btnPerm
 };
 const mutations = {
   //菜单切换
@@ -35,6 +37,10 @@ const mutations = {
   // 更新角色
   UPDATE_ROLES(state, value) {
     state.roles = value;
+  },
+  // 更新按钮权限
+  UPDATE_BUTTON(state, value) {
+    state.btnPerm = value;
   }
 };
 const actions = {

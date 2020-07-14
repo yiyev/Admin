@@ -98,15 +98,24 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="{ row }">
-          <el-button type="danger" size="mini" @click="deleteItem(row.id)"
+          <el-button
+            type="danger"
+            size="mini"
+            @click="deleteItem(row.id)"
+            v-if="btnPerm('info:del')"
             >删除</el-button
           >
-          <el-button type="success" size="mini" @click="editItem(row)"
+          <el-button
+            type="success"
+            size="mini"
+            @click="editItem(row)"
+            v-if="btnPerm('info:edit')"
             >编辑</el-button
           >
           <router-link
             :to="{ name: 'InfoDetailed', query: { id: row.id } }"
             class="margin_left_10"
+            v-if="btnPerm('info:detailed')"
           >
             <el-button type="success" size="mini">编辑详情</el-button>
           </router-link>
@@ -168,7 +177,6 @@ export default {
       search_key: "id", //关键字  id/标题
       search_keywork: "", //搜索内容
       dialog_info: false, //新增弹框展示
-      dialog_edit: false, //编辑弹框展示+++
       categoryList: [], //类别列表
       table_data: [], //表格数据
       loadingData: false, //loading加载
