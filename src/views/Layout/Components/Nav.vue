@@ -2,7 +2,7 @@
   <div id="nav_wrap">
     <h1 class="logo"><img src="../../../assets/logo.png" alt="" /></h1>
     <el-menu
-      default-active="1-4-1"
+      :default-active="defaultActive"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
       background-color="transparent"
@@ -41,11 +41,19 @@ export default {
     // data数据++++++++++++++
     // 路由数组
     const routers = reactive(root.$router.options.routes);
+    /**
+     * 监听路由变化
+     */
+    const defaultActive = computed(() => {
+      const { path } = root.$route;
+      return path;
+    });
     // computed 监听
     const isCollapse = computed(() => root.$store.state.app.isCollapse);
     return {
       isCollapse,
-      routers
+      routers,
+      defaultActive
     };
   }
 };

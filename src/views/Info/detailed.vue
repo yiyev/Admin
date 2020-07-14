@@ -47,7 +47,7 @@
 <script>
 import { GetList, EditInfo } from "@/api/news";
 import { timestampToTime } from "@/utils/common";
-import { reactive, onMounted } from "@vue/composition-api";
+import { reactive, onMounted, onActivated } from "@vue/composition-api";
 // 组件
 import UploadImg from "@/components/UploadImg";
 // 富文本编辑器
@@ -143,6 +143,12 @@ export default {
     onMounted(() => {
       // 获取信息分类
       getInfoCategory();
+    });
+    /**
+     * onActivated
+     */
+    onActivated(() => {
+      data.id = root.$route.query.id;
       // 获取信息
       getInfo();
     });

@@ -288,12 +288,18 @@ export default {
      * 角色列表
      */
     const getRole = () => {
-      GetRole().then(res => {
-        data.roleItem = res.data.data;
-      });
-      GetpermButton().then(res => {
-        data.btnPerm = res.data.data;
-      });
+      // 角色权限
+      if (data.roleItem.length === 0) {
+        GetRole().then(res => {
+          data.roleItem = res.data.data;
+        });
+      }
+      // 按钮权限
+      if (data.btnPerm.length === 0) {
+        GetpermButton().then(res => {
+          data.btnPerm = res.data.data;
+        });
+      }
     };
     // submit
     const submit = () => {

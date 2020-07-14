@@ -111,7 +111,7 @@ export default {
       // 下拉框组件配置参数
       configSelect: {
         // 下拉框key集合
-        init: ["name", "phone", "email"]
+        init: ["truename", "phone", "username"]
       },
       // 下拉菜单数据
       selectData: {},

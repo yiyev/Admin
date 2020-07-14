@@ -320,6 +320,9 @@ export default {
       let categoryData = data.categoryList.filter(
         item => item.id == row.categoryId
       )[0];
+      if (!categoryData) {
+        return false;
+      }
       return categoryData.category_name;
     };
     // 日期格式化

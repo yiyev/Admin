@@ -87,6 +87,7 @@ export const asnycRouterMap = [
         path: "/infoIndex",
         name: "InfoIndex",
         meta: {
+          keepAlive: true,
           role: ["sale"],
           name: "信息列表"
         },
@@ -106,6 +107,7 @@ export const asnycRouterMap = [
         name: "InfoDetailed",
         hidden: true,
         meta: {
+          keepAlive: true,
           role: ["sale"],
           name: "信息详情"
         },
@@ -131,6 +133,7 @@ export const asnycRouterMap = [
         path: "/userIndex",
         name: "UserIndex",
         meta: {
+          keepAlive: true,
           role: ["sale"],
           name: "用户列表"
         },

@@ -10,9 +10,13 @@
   &.is-active.is-opened .el-submenu__title {
     background-color: $mainColor !important;
   }
-  &.is-opened {
-    > .el-submenu__title {
-      background-color: $mainColor !important;
+}
+.close {
+  .el-submenu {
+    &.is-opened {
+      > .el-submenu__title {
+        background-color: $mainColor !important;
+      }
     }
   }
 }

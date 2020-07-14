@@ -4,7 +4,10 @@ import { getToken, getUserName } from "@/utils/app";
 
 // 创建axios,赋给变量service
 // 手把手撸码前端API，地址http://www.web-jshtml.cn/productapi/productapi
-const BASEURL = process.env.NOVD_ENV === "production" ? "" : "/devApi";
+const BASEURL =
+  process.env.NOVD_ENV === "production"
+    ? process.env.VUE_APP_API
+    : process.env.VUE_APP_API;
 const service = axios.create({
   baseURL: BASEURL, //  http://192.168.1.103:8000/devApi/ == http://www.web-jshtml.cn/productapi/productapi
   timeout: 10000 //超时

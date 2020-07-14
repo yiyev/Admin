@@ -36,9 +36,9 @@ export default {
       selectValue: "",
       initOptions: [],
       options: [
-        { value: "name", label: "姓名" },
+        { value: "truename", label: "姓名" },
         { value: "phone", label: "手机号" },
-        { value: "email", label: "邮箱" },
+        { value: "username", label: "邮箱" },
         { value: "id", label: "ID" },
         { value: "title", label: "标题" }
       ]
@@ -76,6 +76,8 @@ export default {
       data.initOptions = optionArr;
       // 初始化搜索类型
       data.selectValue = optionArr[0].value;
+      // 返回初始值
+      emit("update:selectData", optionArr[0]);
     };
 
     /**
@@ -112,10 +114,10 @@ teplate： <v-select :config="data.configOptions" />
 
 参数配置：
 configOptions: {
-  init: ["name", "phone"]
+  init: ["username", "phone"]
 }
 configOptions： Object;
 init: 
   数据类型：Array;
-  可配置的数据："name", "phone", "email", "id", "title";
+  可配置的数据："username", "phone", "username", "id", "title";
 -->
