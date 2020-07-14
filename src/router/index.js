@@ -3,14 +3,13 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 // 解决vue-router在3.0版本以上重复点击菜单报错的问题
-// const originalPush = VueRouter.prototype.push;
-// VueRouter.prototype.push = function push(location) {
-//   return originalPush.call(this, location).catch(err => err);
-// };
-
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err);
+};
 /**
  * 1、系统分配
- * 2、角色分配
+ * 2、角色分配（当前）
  */
 
 // 引入布局组件
@@ -19,7 +18,7 @@ import Layout from "@/views/Layout";
 /**
  * 默认路由
  */
-export const defaultRouteMap = [
+export const defaultRouterMap = [
   {
     path: "/",
     redirect: "login",
@@ -60,13 +59,16 @@ export const defaultRouteMap = [
 ];
 
 const router = new VueRouter({
-  routes: defaultRouteMap
+  routes: defaultRouterMap
 });
+
+export default router;
 
 /**
  * 动态路由
+ * 角色 technician, manager, sale
  */
-export const asnycRoutrMap = [
+export const asnycRouterMap = [
   /**
    * 信息管理
    */
@@ -74,6 +76,7 @@ export const asnycRoutrMap = [
     path: "/info",
     name: "Info",
     meta: {
+      role: ["sale", "manager"],
       system: "infoSystem", //自定义key
       name: "信息管理",
       icon: "info"
@@ -84,6 +87,7 @@ export const asnycRoutrMap = [
         path: "/infoIndex",
         name: "InfoIndex",
         meta: {
+          role: ["manager"],
           name: "信息列表"
         },
         component: () => import("../views/Info")
@@ -92,6 +96,7 @@ export const asnycRoutrMap = [
         path: "/infoCategory",
         name: "InfoCategory",
         meta: {
+          role: ["sale"],
           name: "信息分类"
         },
         component: () => import("../views/Info/category.vue")
@@ -101,6 +106,7 @@ export const asnycRoutrMap = [
         name: "InfoDetailed",
         hidden: true,
         meta: {
+          role: ["sale"],
           name: "信息详情"
         },
         component: () => import("../views/Info/detailed.vue")
@@ -114,6 +120,7 @@ export const asnycRoutrMap = [
     path: "/user",
     name: "User",
     meta: {
+      role: ["sale"],
       system: "userSystem",
       name: "用户管理",
       icon: "user"
@@ -124,6 +131,7 @@ export const asnycRoutrMap = [
         path: "/userIndex",
         name: "UserIndex",
         meta: {
+          role: ["sale"],
           name: "用户列表"
         },
         component: () => import("../views/User")
@@ -131,5 +139,3 @@ export const asnycRoutrMap = [
     ]
   }
 ];
-
-export default router;

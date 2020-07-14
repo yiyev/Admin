@@ -79,9 +79,9 @@
         <el-radio v-model="data.form.status" label="1">禁用</el-radio>
         <el-radio v-model="data.form.status" label="2">启用</el-radio>
       </el-form-item>
-      <!-- 角色 -->
+      <!-- 系统 -->
       <el-form-item
-        label="角色："
+        label="系统："
         :label-width="data.formLabelWidth"
         prop="role"
         required
@@ -107,7 +107,7 @@
 
 <script>
 import { reactive, watch } from "@vue/composition-api";
-import { GetRole, UserAdd, UserEdit } from "@/api/user";
+import { GetSystem, UserAdd, UserEdit } from "@/api/user";
 // 地区组件
 import cityPicker from "@/components/CityPicker";
 // 加密
@@ -260,15 +260,16 @@ export default {
      * methods+++++++++++++++++++++++++++++++
      */
     /**
-     * 角色列表
+     * 系统列表
      */
-    const getRole = () => {
-      GetRole().then(res => {
+    const getSystem = () => {
+      GetSystem().then(res => {
         data.roleItem = res.data.data;
       });
     };
     // submit
     const submit = () => {
+      console.log(`role----`, data.form.role);
       refs["userForm"].validate(valid => {
         // 表单验证通过
         if (valid) {
@@ -344,8 +345,8 @@ export default {
 
     // 打开弹框
     const open = () => {
-      // 角色列表
-      getRole();
+      // 系统列表
+      getSystem();
       // 初始值处理
       let editData = props.editData;
       // 如果存在id，编辑
@@ -372,7 +373,7 @@ export default {
 
     return {
       data,
-      getRole,
+      getSystem,
       open,
       close,
       submit,

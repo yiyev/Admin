@@ -1,25 +1,34 @@
 import { getUserRole } from "@/api/login";
-import { defaultRouteMap, asnycRoutrMap } from "@/router";
+import { defaultRouterMap, asnycRouterMap } from "@/router";
+
+/**
+ * 判断路由中是否存在角色
+ * @param {
+ * 用户角色
+ * *} roles
+ * @param {
+ * 路由
+ * *} router
+ */
+function hasPermission(roles, router) {
+  if (router.meta && router.meta.role) {
+    return roles.some(item => router.meta.role.indexOf(item) >= 0);
+  }
+}
 
 const state = {
-  roles: [],
-  allRouters: defaultRouteMap,
+  allRouters: defaultRouterMap,
   addRouters: []
 };
 const getters = {
-  roles: state => state.roles,
   allRouters: state => state.allRouters, //所有的路由
   addRouters: state => state.addRouters //匹配的路由
 };
 const mutations = {
-  // 更新角色
-  UPDATE_ROLES(state, value) {
-    state.roles = value;
-  },
   // 更新路由
   UPDATE_ROUTER(state, router) {
     state.addRouters = router;
-    state.allRouters = defaultRouteMap.concat(router);
+    state.allRouters = defaultRouterMap.concat(router);
   }
 };
 const actions = {
@@ -32,9 +41,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       getUserRole()
         .then(response => {
-          let role = response.data.data.role;
-          commit("UPDATE_ROLES", role);
-          resolve(role);
+          let data = response.data.data;
+          resolve(data);
         })
         .catch();
     });
@@ -50,11 +58,21 @@ const actions = {
       let addRouters = [];
       // 超级管理员
       if (role.includes("admin")) {
-        addRouters = asnycRoutrMap;
+        addRouters = asnycRouterMap;
       } else {
         // 普通管理员
-        addRouters = asnycRoutrMap.filter(item => {
-          if (role.includes(item.meta.system)) {
+        addRouters = asnycRouterMap.filter(item => {
+          // 一级路由
+          if (hasPermission(role, item)) {
+            // 二级路由
+            if (item.children && item.children.length > 0) {
+              item.children = item.children.filter(child => {
+                if (hasPermission(role, child)) {
+                  return child;
+                }
+              });
+              return item;
+            }
             return item;
           }
         });

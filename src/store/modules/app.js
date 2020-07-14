@@ -9,11 +9,13 @@ import {
 const state = {
   isCollapse: JSON.parse(sessionStorage.getItem("isCollapse")) || false,
   token: "",
-  username: getUserName() || ""
+  username: getUserName() || "",
+  roles: []
 };
 const getters = {
   isCollapse: state => state.isCollapse,
-  username: state => state.username
+  username: state => state.username,
+  roles: state => state.roles
 };
 const mutations = {
   //菜单切换
@@ -29,6 +31,10 @@ const mutations = {
   //更新用户名
   UPDATE_USERNAME(state, value) {
     state.username = value;
+  },
+  // 更新角色
+  UPDATE_ROLES(state, value) {
+    state.roles = value;
   }
 };
 const actions = {
@@ -58,6 +64,7 @@ const actions = {
       removeUserName();
       commit("UPDATE_TOKEN", "");
       commit("UPDATE_USERNAME", "");
+      commit("UPDATE_ROLES", []);
       resolve();
     });
   }
