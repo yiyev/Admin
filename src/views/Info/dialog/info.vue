@@ -128,8 +128,8 @@ export default {
       AddInfo(requestData)
         .then(res => {
           data.submit_loading = false;
-          // 重置表单
-          refs["form"].resetFields();
+          // 关闭弹框
+          close();
           // 更新数据
           emit("updateData");
           root.$message({
@@ -148,6 +148,8 @@ export default {
       EditInfo(requestData)
         .then(res => {
           data.submit_loading = false;
+          // 关闭弹框
+          close();
           // 更新数据
           emit("updateData");
           root.$message({

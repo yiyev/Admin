@@ -97,7 +97,7 @@
 <script>
 import sha1 from "js-sha1";
 import { GetSms, Register } from "@/api/login";
-import { reactive, ref } from "@vue/composition-api";
+import { reactive, ref, onUnmounted } from "@vue/composition-api";
 import {
   stripscript,
   validateEmail,
@@ -313,9 +313,7 @@ export default {
       if (timer.value) {
         clearInterval(timer.value);
       }
-
       let time = number;
-
       timer.value = setInterval(() => {
         time--;
         if (time === 0) {
@@ -336,6 +334,14 @@ export default {
       // 清除倒计时
       clearInterval(timer.value);
     };
+
+    /**
+     * 销毁页面时
+     */
+    onUnmounted(() => {
+      // 清除倒计时
+      clearCountDown(timer.value);
+    });
     return {
       menuTab,
       model,
