@@ -1,4 +1,4 @@
-import { Login } from "@/api/login";
+import { Login, Logout } from "@/api/login";
 import {
   setToken,
   setUserName,
@@ -64,14 +64,17 @@ const actions = {
     });
   },
   // 退出后台
-  exit({ commit }) {
+  logout({ commit }) {
     return new Promise(resolve => {
-      removeToken();
-      removeUserName();
-      commit("UPDATE_TOKEN", "");
-      commit("UPDATE_USERNAME", "");
-      commit("UPDATE_ROLES", []);
-      resolve();
+      Logout().then(res => {
+        const data = res.data;
+        removeToken();
+        removeUserName();
+        commit("UPDATE_TOKEN", "");
+        commit("UPDATE_USERNAME", "");
+        commit("UPDATE_ROLES", []);
+        resolve(data);
+      });
     });
   }
 };

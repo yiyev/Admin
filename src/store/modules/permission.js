@@ -76,6 +76,8 @@ const actions = {
             return item;
           }
         });
+        // 添加404页面
+        addRouters.push(asnycRouterMap.length - 1);
       }
       // 更新路由
       commit("UPDATE_ROUTER", addRouters);

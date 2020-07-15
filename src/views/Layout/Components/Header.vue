@@ -5,7 +5,7 @@
     </div>
     <div class="pull_right">
       <div class="user_info pull_left">{{ username }}</div>
-      <div class="pull_left header_icon" @click="exit">
+      <div class="pull_left header_icon" @click="logout">
         <svg-icon iconClass="exit" className="exit" />
       </div>
     </div>
@@ -22,17 +22,23 @@ export default {
     };
     const username = computed(() => root.$store.state.app.username);
     // 退出
-    const exit = () => {
-      root.$store.dispatch("app/exit").then(() => {
-        root.$router.push({
-          name: "Login"
-        });
+    const logout = () => {
+      root.$store.dispatch("app/logout").then(res => {
+        if (res.resCode === 0) {
+          root.$message({
+            message: res.message,
+            type: "success"
+          });
+          root.$router.push({
+            name: "Login"
+          });
+        }
       });
     };
     return {
       navMenuState,
       username,
-      exit
+      logout
     };
   }
 };

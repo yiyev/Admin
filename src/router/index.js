@@ -55,6 +55,25 @@ export const defaultRouterMap = [
         component: () => import("../views/Console")
       }
     ]
+  },
+  // 404页面
+  {
+    path: "/page404",
+    hidden: true,
+    meta: {
+      name: "404",
+      icon: "404"
+    },
+    component: Layout,
+    children: [
+      {
+        path: "/404",
+        meta: {
+          name: "404"
+        },
+        component: () => import("../views/404.vue")
+      }
+    ]
   }
 ];
 
@@ -140,5 +159,7 @@ export const asnycRouterMap = [
         component: () => import("../views/User")
       }
     ]
-  }
+  },
+  // 404页面
+  { path: "*", redirect: "/404", hidden: true }
 ];
